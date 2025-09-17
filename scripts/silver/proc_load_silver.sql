@@ -1,35 +1,16 @@
-/*
-===============================================================================
-Stored Procedure: Load Silver Layer (Bronze -> Silver)
-===============================================================================
-Script Purpose:
-    This stored procedure performs the ETL (Extract, Transform, Load) process to 
-    populate the 'silver' schema tables from the 'bronze' schema.
-	Actions Performed:
-		- Truncates Silver tables.
-		- Inserts transformed and cleansed data from Bronze into Silver tables.
-		
-Parameters:
-    None. 
-	  This stored procedure does not accept any parameters or return any values.
-
-Usage Example:
-    EXEC Silver.load_silver;
-===============================================================================
-*/
--- Enable Snowflake Scripting
 CREATE OR REPLACE PROCEDURE silver.load_silver()
 RETURNS STRING
 LANGUAGE SQL
 AS
 $$
 DECLARE 
-    start_time      TIMESTAMP_NTZ;
-    end_time        TIMESTAMP_NTZ;
+    start_time       TIMESTAMP_NTZ;
+    end_time         TIMESTAMP_NTZ;
     batch_start_time TIMESTAMP_NTZ;
-    batch_end_time  TIMESTAMP_NTZ;
+    batch_end_time   TIMESTAMP_NTZ;
 BEGIN
-    LET batch_start_time = CURRENT_TIMESTAMP;
+    LET batch_start_time := CURRENT_TIMESTAMP;
+
     RETURN '================================================\nLoading Silver Layer\n================================================';
 
     -----------------------------
@@ -37,7 +18,7 @@ BEGIN
     -----------------------------
 
     -- Loading silver.crm_cust_info
-    LET start_time = CURRENT_TIMESTAMP;
+    LET start_time := CURRENT_TIMESTAMP;
     TRUNCATE TABLE silver.crm_cust_info;
     INSERT INTO silver.crm_cust_info (
         cst_id, 
@@ -75,7 +56,7 @@ BEGIN
     -----------------------------
     -- Loading silver.crm_prd_info
     -----------------------------
-    LET start_time = CURRENT_TIMESTAMP;
+    LET start_time := CURRENT_TIMESTAMP;
     TRUNCATE TABLE silver.crm_prd_info;
     INSERT INTO silver.crm_prd_info (
         prd_id,
@@ -110,7 +91,7 @@ BEGIN
     -----------------------------
     -- Loading silver.crm_sales_details
     -----------------------------
-    LET start_time = CURRENT_TIMESTAMP;
+    LET start_time := CURRENT_TIMESTAMP;
     TRUNCATE TABLE silver.crm_sales_details;
     INSERT INTO silver.crm_sales_details (
         sls_ord_num,
@@ -142,7 +123,7 @@ BEGIN
     -----------------------------
     -- Loading silver.erp_cust_az12
     -----------------------------
-    LET start_time = CURRENT_TIMESTAMP;
+    LET start_time := CURRENT_TIMESTAMP;
     TRUNCATE TABLE silver.erp_cust_az12;
     INSERT INTO silver.erp_cust_az12 (
         cid,
@@ -162,7 +143,7 @@ BEGIN
     -----------------------------
     -- Loading silver.erp_loc_a101
     -----------------------------
-    LET start_time = CURRENT_TIMESTAMP;
+    LET start_time := CURRENT_TIMESTAMP;
     TRUNCATE TABLE silver.erp_loc_a101;
     INSERT INTO silver.erp_loc_a101 (
         cid,
@@ -181,7 +162,7 @@ BEGIN
     -----------------------------
     -- Loading silver.erp_px_cat_g1v2
     -----------------------------
-    LET start_time = CURRENT_TIMESTAMP;
+    LET start_time := CURRENT_TIMESTAMP;
     TRUNCATE TABLE silver.erp_px_cat_g1v2;
     INSERT INTO silver.erp_px_cat_g1v2 (
         id,
@@ -199,9 +180,10 @@ BEGIN
     -----------------------------
     -- End
     -----------------------------
-    LET batch_end_time = CURRENT_TIMESTAMP;
-    RETURN 'Loading Silver Layer Completed. Total Duration: ' || DATEDIFF('second', batch_start_time, batch_end_time) || ' seconds';
-    
+    LET batch_end_time := CURRENT_TIMESTAMP;
+    RETURN 'Loading Silver Layer Completed. Total Duration: ' 
+           || DATEDIFF('second', batch_start_time, batch_end_time) || ' seconds';
+
 EXCEPTION
     WHEN OTHER THEN
         RETURN 'Error Occurred During Loading Silver Layer: ' || ERROR_MESSAGE();
